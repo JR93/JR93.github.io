@@ -15,19 +15,31 @@
       height: 100px;
       border-radius: 50%;
     }
-    .cover-main h1 a {
-      pointer-events: none;
-    }
     .app-name-link img {
       width: 50px;
       height: 50px;
       border-radius: 50%;
+    }
+    .cover-main h1 a,
+    .app-name-link {
+      pointer-events: none;
+    }
+    .app-sub-sidebar > li:last-child:before {
+      content: '';
     }
     nav.app-nav li ul {
       min-width: 100px;
     }
     .sidebar ul li {
       font-weight: 700;
+      cursor: pointer;
+    }
+    .sidebar ul li.active {
+      color: var(--theme-color,#42b983);
+    }
+    .sidebar ul li.active ul,
+    .sidebar ul li.active li{
+      color: #505d6b;
     }
   </style>
 </head>
@@ -65,16 +77,42 @@
       pagination: {
         previousText: '上一篇',
         nextText: '下一篇'
-      }
+      },
+      plugins: [
+        function (hook, vm) {
+          hook.doneEach(function() {
+            var sidebarLiEls = document.querySelectorAll('.sidebar-nav li')
+            sidebarLiEls.forEach(function (el) {
+              el.addEventListener('click', function (e) {
+                e.stopPropagation()
+                clearActiveClass()
+                el.classList.add('active')
+                var targetEl = e.target.children[0] || e.target.nextElementSibling
+                if (!targetEl) return
+                if (targetEl.nodeName.toLowerCase() !== 'ul') return
+                if (targetEl.style.display === 'none') {
+                  targetEl.style.display = 'block'
+                } else {
+                  targetEl.style.display = 'none'
+                }
+              }, false)
+            })
+            function clearActiveClass() {
+              sidebarLiEls.forEach(function (el) {
+                if (el.classList.contains('active')) {
+                  el.classList.remove('active')
+                }
+              })
+            }
+          })
+        }
+      ]
     }
   </script>
   <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
   <script src="//unpkg.com/docsify/lib/plugins/search.min.js"></script>
-  <script src="//unpkg.com/docsify/lib/plugins/emoji.js"></script>
   <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
   <script src="//unpkg.com/docsify/lib/plugins/zoom-image.js"></script>
-  <script src="//unpkg.com/prismjs/components/prism-markdown.min.js"></script>
-  <script src="//unpkg.com/prismjs/components/prism-bash.js"></script>
   <script src="https://unpkg.com/docsify-copy-code@2"></script>
   <script src="//unpkg.com/docsify/lib/plugins/gitalk.min.js"></script>
   <script src="//unpkg.com/gitalk/dist/gitalk.min.js"></script>
